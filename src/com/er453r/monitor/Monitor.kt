@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class Monitorpplication
+class Monitor
 
 fun main(args: Array<String>) {
-    runApplication<Monitorpplication>(*args)
+    runApplication<Monitor>(*args)
 }
