@@ -1,0 +1,13 @@
+spring:
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+
+server:
+  port: 8081
+
+logging:
+  level:
+    com.er453r: INFO
+    org.springframework: INFO
+    ROOT: INFO
