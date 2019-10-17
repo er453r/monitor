@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
 
-curl HOST
+id=$1
+host=HOST
+
+while true; do
+    echo Calling home
+
+    curl "$host/tasks?id=$id"
+
+    sleep 5
+done
