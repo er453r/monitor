@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <title>Sample monitoring script</title>
+
+    <script>
+        NodeList.prototype.forEach = Array.prototype.forEach
+
+        function updateNode(node, parentId = null){
+          let element = document.querySelector(`div[data-node-id=${node.name}]`)
+
+          if(element == null) {
+            element = document.createElement("div")
+            element.setAttribute("data-node-id", node.name)
+            const elementTitle = document.createElement("h2")
+            elementTitle.innerText = node.name
+            elementTitle.className = "title"
+            element.appendChild(elementTitle)
+
+            const elementChildren = document.createElement("div")
+            elementChildren.className = "children"
+            element.appendChild(elementChildren)
+
+            const parent = parentId ? document.querySelector(`div[data-node-id=${parentId}]`) : document.body
+
+            parent.appendChild(element)
+          }
+
+          for (const [key, value] of Object.entries(node.nodes)) {
+            updateNode(value, node.name)
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded and parsed');
+
+            const url = "http://localhost:8081/status"
+
+            setInterval(async () => {
+              const response = await fetch(url);
+              const result = await response.json();
+
+              console.log(`got result ${JSON.stringify(result)}`)
+
+              updateNode(result)
+            }, 2000)
+        });
+    </script>
+
+    <style>
+        [data-node-id] div{
+            padding-left: 2em;
+        }
+    </style>
+</head>
+<body>
+
+</body>
+</html>

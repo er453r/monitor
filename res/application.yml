@@ -1,3 +1,28 @@
+monitor:
+  user: testuser
+  pass: testpass
+
+  commands:
+    ping:
+      cmd: ping
+      remote: false
+    uptime:
+      cmd: uptime
+    sleep:
+      cmd: sleep 3
+
+  nodes:
+    local:
+      commands:
+        ping: 8.8.8.8
+
+      nodes:
+        i5:
+          commands:
+            ping: 127.0.0.1
+            uptime: 123
+            sleep: 123
+
 spring:
   jackson:
     serialization:
