@@ -1,6 +1,7 @@
 package com.er453r.monitor.controllers
 
 import com.er453r.monitor.scheduler.Command
+import com.er453r.monitor.scheduler.Node
 import com.er453r.monitor.scheduler.NodeState
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
@@ -36,7 +37,11 @@ class TasksController(
     }
 
     @GetMapping("status")
-    fun status() = nodeState.root
+    fun status():Node{
+        log.info { "Reporting status..." }
+
+        return nodeState.root
+    }
 
     @PostMapping("report")
     fun report(token: String, @RequestBody data: String) {
