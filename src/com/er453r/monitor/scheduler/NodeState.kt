@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class NodeState(
-        config: Config
+        val config: Config
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -21,7 +21,11 @@ class NodeState(
     }
 
     fun add(name: String, nodeDefinition: Config.NodeDefinition, parent: Node) {
-        val node = Node(name, parent)
+        val node = Node(
+                name = name,
+                nodeDefinition = nodeDefinition,
+                parent = parent
+        )
 
         log.info { "Created node ${node.fullName}" }
 
@@ -35,31 +39,44 @@ class NodeState(
     fun update(path: String) {
         log.info { "Updating $path" }
 
-//        val parts = path.split("/")
-//        var node = root
-//
-//        parts.forEach { part ->
-//            if(!node.nodes.containsKey(part)) {
-//                log.info { "Creating node $part" }
-//
-//                node.nodes[part] = Node(part)
-//            }
-//
-//            node.nodes[part]?.let {
-//                node = it
-//            }
-//        }
-//
-//        var configNode = config.nodes
-//
-//        parts.forEach { part ->
-//            if (!configNode.containsKey(part)){
-//                log.warn { "No config for part $part!!!" }
-//
-//                return@forEach
-//            }
-//            else
-//                configNode = configNode[part]!!.nodes
-//        }
+        var parent = root
+
+        path.split("/").forEach { part ->
+            parent.nodes[part]?.let {
+                parent = it
+            } ?: run {
+                log.info { "Creating node without definition $part" }
+
+                Node(
+                        name = part,
+                        parent = parent
+                ).let {
+                    parent.nodes[part] = it
+                    parent = it
+                }
+            }
+        }
+    }
+
+    fun getConfig(path: String):Array<Command> {
+        val commands = mutableListOf<Command>()
+
+        root.find(path)?.let { // TODO figure out id we should check for commands recursively?
+            it.commands.forEach {
+                val commandId = it.key
+                val commandArguments = it.value
+
+                config.commands[commandId]?.let {
+                    commands.add(Command(
+                            cmd = it.cmd,
+                            args = arrayOf(commandArguments)
+                    ))
+                } ?: run {
+                    log.warn { "No such command: $commandId" }
+                }
+            }
+        }
+
+        return commands.toTypedArray()
     }
 }
